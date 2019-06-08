@@ -1,0 +1,9 @@
+{
+    "require":{
+        "flask": "latest",
+        "python-sqlite-orm": "latest"
+    },
+
+    "tests" : "./tests",
+    "main": "./app.py"
+}
