@@ -36,11 +36,11 @@ class dbConector:
 
     def doConection(self): # Do the connection with DB users in the same directory
 
-        if not isfile('test.db'): # If is the first time, it will create the DB
-            self.dbAgent = Database("test.db")
+        if not isfile('Users.db'): # If is the first time, it will create the DB
+            self.dbAgent = Database("Users.db")
             self.dbAgent.query(Person, Groups).create().execute()
         else:
-            self.dbAgent = Database("test.db")
+            self.dbAgent = Database("Users.db")
 
     def closeConection(self)->None:
         self.dbAgent.close()
