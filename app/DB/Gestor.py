@@ -116,32 +116,3 @@ class DtoGroups:
         c.doConection()
         c.dbAgent.query(Groups).delete().filter(Groups.id == id).execute()
         c.closeConection()
-
-
-
-if __name__ == '__main__':
-    camila = Person(identification = 1, name = 'rodrigo', age = 32)
-    db = DtoPerson()
-    #db.insert(camila)
-    result = db.queryByName('rodrigo')
-    print(result.name)
-
-#    db = dbConector.getInstance()
-
-#    db.deleteP(camila)
-#    db.closeConection()
-#    temp = db.queryByName("azul")
-#    print(temp.name + "holas")
-#    db.update(camila)
-
-
-    #db.queryById(5)
-
-    #with Database("test.db") as db:
-        #db.query(Person).create().execute()
-        #person1 = Person(identification = 2, name = 'andrea')
-        #db.query().insert(person1).execute()
-
-    #    personQ = Person(identification = 2, name = 'andrea')
-    #    for row in db.query(Person).select().filter(Person.name == 'andrea').execute():
-    #        print(row)

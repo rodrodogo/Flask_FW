@@ -4,6 +4,6 @@
         "python-sqlite-orm": "latest"
     },
 
-    "tests" : "./tests",
+    "tests" : "./test/test.py",
     "main": "./app/app.py"
 }
