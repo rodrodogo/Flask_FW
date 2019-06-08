@@ -39,15 +39,15 @@ def vw_person():
 def insert():
 	_age = request.form['age']
 	_id = request.form['id']
-	c = dbConector.getInstance()
+	c = DtoPerson();
 	try:
 		_name = request.form['firstname']
 		newP = Person(identification = _id, name =_name, age = _age)
 		c.insert(newP)
 	except:
-		_name = request.form['firstname']
+		_name = request.form['firstnameM']
 		newP = Person(identification = _id, name =_name, age = _age)
-		c.updateP(newP)
+		c.update(newP)
 
 	return app.send_static_file("success.html")
 
@@ -62,8 +62,8 @@ def vwPerson():
 				  </tr>
 			'''
 	_name = request.form['firstname']
-	c = dbConector.getInstance()
-	_result = c.queryByName(_name)
+	s = DtoPerson();
+	_result = s.queryByName(_name)
 
 	output += ''' <tr><th>{0}</th>
 					<th>{1}</th>
@@ -77,7 +77,7 @@ def vwPerson():
 @app.route('/edtPerson', methods =['POST'])
 def edtPerson():
 	_name = request.form['firstname']
-	c = dbConector.getInstance()
+	c = DtoPerson();
 	_result = c.queryByName(_name)
 	output = '''
 				<form action="/insert", method="post">
@@ -98,8 +98,8 @@ def edtPerson():
 @app.route('/rmvPerson', methods = ['POST'])
 def rmvPerson():
 	_id = request.form['id']
-	c = dbConector.getInstance()
-	c.deleteP(_id)
+	c = DtoPerson();
+	c.delete(_id)
 	return "Eliminado"
 
 #------------------------------Groups-------------------------------------------
@@ -108,14 +108,15 @@ def rmvPerson():
 def insertGroup():
 
 	_id = request.form['id']
-	c = dbConector.getInstance()
+	c = DtoGroups()
 	try:
 		_name = request.form['name']
-		c.insert("INSERT INTO groups VALUES  ({1} ,'{0}')".format(_name,_id))
+		gruop = Groups(id = _id, name = _name)
+		c.insert(gruop)
 	except:
 		_name = request.form['nameM']
-		c.insert("UPDATE groups SET name = '{0}'\
-				 WHERE id = {1}".format(_name,_id))
+		gruop = Groups(id = _id, name = _name)
+		c.update(gruop)
 
 	return app.send_static_file("success.html")
 
@@ -129,22 +130,20 @@ def vwGroup():
 				  </tr>
 			'''
 	_name = request.form['name']
-	c = dbConector.getInstance()
-	_result = c.query("SELECT * FROM groups WHERE name = '{}'".format(_name))
-	for row in _result:
-		output += ''' <tr><th>{0}</th>
+	c = DtoGroups()
+	_result = c.queryByName(_name)
+	output += ''' <tr><th>{0}</th>
 					<th>{1}</th>
 					</tr>
-				'''.format(row['id'],row['name'])
-
+				'''.format(_result.id,_result.name)
 	output += "</table>"
 	return output
 
 @app.route('/edtGroup', methods =['POST'])
 def edtGroup():
 	_name = request.form['name']
-	c = dbConector.getInstance()
-	_result = c.query("SELECT * FROM groups WHERE name = '{}'".format(_name))
+	c = DtoGroups()
+	_result = c.queryByName(_name)
 	output = '''
 				<form action="/insertGroup", method="post">
 				  id:<br>
@@ -156,14 +155,14 @@ def edtGroup():
 				  <br><br>
 				  <input type="submit" value="Submit">
 				</form>
-			'''.format(_result[0]['id'],_result[0]['name'])
+			'''.format(_result.id,_result.name)
 	return output
 
 @app.route('/rmvGroup', methods = ['POST'])
 def rmvGroup():
 	_id = request.form['id']
-	c = dbConector.getInstance()
-	c.insert("DELETE FROM groups WHERE id = {}".format(_id))
+	c = DtoGroups()
+	c.delete(_id)
 	return "Eliminado"
 
 #----------------------------End Points-----------------------------------------

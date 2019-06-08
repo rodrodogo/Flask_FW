@@ -12,10 +12,15 @@ class Person(BaseTable):
     name = TextField(not_null=True)
     age = IntegerField()
 
+class Groups(BaseTable):
+    __table_name__ = 'groups'
+    id = IntegerField(primary_key=True, auto_increment=True)
+    name = TextField(not_null=True)
+
 class dbConector:
 
     __instance = None   # singleton reference
-    __dbAgent = None    # DAO
+    dbAgent = None
 
     @staticmethod
     def getInstance():  # Method to get the unique reference for the class
@@ -29,50 +34,100 @@ class dbConector:
         else:
             dbConector.__instance = self
 
-    def __doConection(self): # Do the connection with DB users in the same directory
+    def doConection(self): # Do the connection with DB users in the same directory
 
         if not isfile('test.db'): # If is the first time, it will create the DB
-            self.__dbAgent = Database("test.db")
-            self.__dbAgent.query(Person).create().execute()
+            self.dbAgent = Database("test.db")
+            self.dbAgent.query(Person, Groups).create().execute()
         else:
-            self.__dbAgent = Database("test.db")
+            self.dbAgent = Database("test.db")
+
+    def closeConection(self)->None:
+        self.dbAgent.close()
+
+
+class DtoPerson:
 
     # Receive the SQL Query and execute to insert new information
     def insert(self, per:Person)-> None:
-        self.__doConection()
-        self.__dbAgent.query().insert(per).execute()
-        self.__closeConection()
+        c = dbConector.getInstance()
+        c.doConection()
+        c.dbAgent.query().insert(per).execute()
+        c.closeConection()
 
     def queryById(self,id:int)-> None:
         for row in self.__dbAgent.query(Person).select().filter(Person.identification == id).execute():
             print(row)
 
     def queryByName(self,name:str):
-        self.__doConection()
-        _out = self.__dbAgent.query(Person).select().filter(Person.name == name).execute()
+        c = dbConector.getInstance()
+        c.doConection()
+        _out = c.dbAgent.query(Person).select().filter(Person.name == name).execute()
 
         for rw in _out:#Machete barbaro
             per = Person(identification = rw[0], name = rw[1], age = rw[2])
-        self.__closeConection()
+        c.closeConection()
         return per
 
-    def updateP(self, per:Person)-> None:
-        self.__doConection()
-        self.__dbAgent.query(Person).update(name = per.name, age = per.age).filter(Person.identification == camila.identification).execute()
-        self.__closeConection()
+    def update(self, per:Person)-> None:
+        c = dbConector.getInstance()
+        c.doConection()
+        c.dbAgent.query(Person).update(name = per.name, age = per.age).filter(Person.identification == per.identification).execute()
+        c.closeConection()
 
-    def deleteP(self, id:int)-> None:
-        self.__doConection()
-        self.__dbAgent.query(Person).delete().filter(Person.identification == id).execute()
-        self.__closeConection()
+    def delete(self, id:int)-> None:
+        c = dbConector.getInstance()
+        c.doConection()
+        c.dbAgent.query(Person).delete().filter(Person.identification == id).execute()
+        c.closeConection()
 
-    def __closeConection(self)->None:
-        self.__dbAgent.close()
 
-#if __name__ == '__main__':
-#    camila = Person(identification = 5, name = 'azul', age = 32)
-#    db = dbConector.getInstance()
+class DtoGroups:
+
+    # Receive the SQL Query and execute to insert new information
+    def insert(self, per:Groups)-> None:
+        c = dbConector.getInstance()
+        c.doConection()
+        c.dbAgent.query().insert(per).execute()
+        c.closeConection()
+
+    def queryById(self,id:int)-> None:
+        for row in self.__dbAgent.query(Groups).select().filter(Groups.id == id).execute():
+            print(row)
+
+    def queryByName(self,name:str):
+        c = dbConector.getInstance()
+        c.doConection()
+        _out = c.dbAgent.query(Groups).select().filter(Groups.name == name).execute()
+
+        for rw in _out:#Machete barbaro
+            per = Groups(id = rw[0], name = rw[1])
+        c.closeConection()
+        return per
+
+    def update(self, per:Groups)-> None:
+        c = dbConector.getInstance()
+        c.doConection()
+        c.dbAgent.query(Groups).update(name = per.name).filter(Groups.id == per.id).execute()
+        c.closeConection()
+
+    def delete(self, id:int)-> None:
+        c = dbConector.getInstance()
+        c.doConection()
+        c.dbAgent.query(Groups).delete().filter(Groups.id == id).execute()
+        c.closeConection()
+
+
+
+if __name__ == '__main__':
+    camila = Person(identification = 1, name = 'rodrigo', age = 32)
+    db = DtoPerson()
     #db.insert(camila)
+    result = db.queryByName('rodrigo')
+    print(result.name)
+
+#    db = dbConector.getInstance()
+
 #    db.deleteP(camila)
 #    db.closeConection()
 #    temp = db.queryByName("azul")
